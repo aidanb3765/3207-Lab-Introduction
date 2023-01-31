@@ -48,8 +48,8 @@ void printDirectory (char* directoryName, int counter)
 
             if (num < 0)
             {
-                perror("Can't open the directory.")
-                exit;
+                perror("Can't open the directory.");
+                exit(1);
             }
 
             while (num--)
