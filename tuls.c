@@ -17,7 +17,7 @@ int isDirectory (char* location)
 {
     DIR* directory = opendir(location);     //Pulls the information at the location found
 
-    if(directory != NULL)
+    if(directory != NULL)       //Validates that the directory is not null
     {
         closedir(directory);    //Closes the directory for finding something, returning 1
         return 1;
@@ -46,7 +46,7 @@ void printDirectory (char* directoryName, int counter)
             struct dirent **names;
             int num = scandir(directoryName, &names, 0, alphasort);
 
-            if (num < 0)
+            if (num == -1)
             {
                 perror("Can't open the directory.");
                 exit(1);
@@ -56,11 +56,39 @@ void printDirectory (char* directoryName, int counter)
             {
                 for (int i = 0; i < counter; i++)
                 {
-                    printf("\t");
+                    printf("\t");       //Separates the information to look clean
                 }
 
+                printf("%s\n", names[num]->d_name);    //prints the various names of the files
+                char fileLocation[MAX_LEN] = "";       //Creates a current file location variable
+                strcpy(fileLocation, directoryName);    //Copies a string pointed by the directory name (including the null character) to the file location
+                strcat(fileLocation, "/");              //Appends the string pointed to the directory name to the end of the string pointed to the file location
+                strcat(fileLocation, names[num]->d_name);  //Appends the string pointed to the file names to the end of the string pointed to the file location
+
+                if(strcmp(names[num]->d_name, ".") != 0 && strcmp(names[num]->d_name, "..") != 0)
+                {
+                    if(isDirectory(fileLocation) == 1)
+                    {
+                        printDirectory(fileLocation, counter + 1);
+                    }
+                }
+
+                free(names[num]);    //Deallocated the memory location for file names pointer
             }
+
         }
+
+        else
+        {
+            perror("Directory not found.");
+            exit(1);
+        }
+    }
+
+    else
+    {
+        perror("Directory not found.");
+        exit(1);
     }
 }
 
